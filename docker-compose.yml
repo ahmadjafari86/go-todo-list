@@ -1,0 +1,40 @@
+services:
+  todo_db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_pass
+      POSTGRES_DB: tododb
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todo_user -d tododb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  todo_app:
+    build: .
+    depends_on:
+      todo_db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgres://todo_user:todo_pass@todo_db:5432/tododb?sslmode=disable
+      PORT: 8282
+      JWT_SECRET: change_this_in_prod
+      JWT_EXP_MINUTES: 60
+    ports:
+      - "8282:8282"
+    volumes:
+      - .:/app
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8282/healthcheck || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:

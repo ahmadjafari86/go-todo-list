@@ -1,0 +1,34 @@
+# Ignore Go build artifacts
+bin/
+build/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Dependency directories
+vendor/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env
+
+# Git files
+.git
+.gitignore
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Node modules (if any frontend)
+node_modules/
