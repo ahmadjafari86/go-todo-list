@@ -1,0 +1,326 @@
+basePath: /
+definitions:
+  models.CreateTodoRequest:
+    properties:
+      title:
+        example: Buy milk
+        type: string
+    type: object
+  models.LoginRequest:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        example: strongpassword
+        type: string
+    type: object
+  models.LoginResponse:
+    properties:
+      token:
+        example: jwt.token.here
+        type: string
+    type: object
+  models.RegisterRequest:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        example: strongpassword
+        type: string
+    type: object
+  models.Todo:
+    properties:
+      completed:
+        type: boolean
+      created_at:
+        type: string
+      id:
+        type: integer
+      owner_id:
+        type: integer
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  models.UpdateTodoRequest:
+    properties:
+      completed:
+        example: false
+        type: boolean
+      title:
+        example: Buy bread
+        type: string
+    type: object
+  models.UserResponse:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      id:
+        example: 1
+        type: integer
+    type: object
+  validation.ProblemDetails:
+    properties:
+      detail:
+        type: string
+      instance:
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+  description: This is a Todo API with JWT authentication, owner-scoped Todos, and
+    RFC7807 error responses.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Todo API
+  version: "1.0"
+paths:
+  /api/todos:
+    get:
+      description: Get all todos for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Todo'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+      security:
+      - BearerAuth: []
+      summary: List todos
+      tags:
+      - todos
+    post:
+      consumes:
+      - application/json
+      description: Create a new todo for the authenticated user
+      parameters:
+      - description: Todo
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Todo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+      security:
+      - BearerAuth: []
+      summary: Create a todo
+      tags:
+      - todos
+  /api/todos/{id}:
+    delete:
+      description: Delete a todo (must belong to the authenticated user)
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+      security:
+      - BearerAuth: []
+      summary: Delete a todo
+      tags:
+      - todos
+    get:
+      description: Get a todo by ID (must belong to the authenticated user)
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Todo'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+      security:
+      - BearerAuth: []
+      summary: Get a todo
+      tags:
+      - todos
+    put:
+      consumes:
+      - application/json
+      description: Update an existing todo (must belong to the authenticated user)
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Todo
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Todo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+      security:
+      - BearerAuth: []
+      summary: Update a todo
+      tags:
+      - todos
+  /api/todos/{id}/complete:
+    patch:
+      description: Mark a todo as complete/incomplete
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Todo'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+      security:
+      - BearerAuth: []
+      summary: Toggle todo completion
+      tags:
+      - todos
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+      summary: Login user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: Register user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/validation.ProblemDetails'
+      summary: Register a new user
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
