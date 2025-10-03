@@ -35,8 +35,8 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/ahmadjafari86/go-todo-list/config"
 	_ "github.com/ahmadjafari86/go-todo-list/docs"
-	"github.com/ahmadjafari86/go-todo-list/internal/config"
 	"github.com/ahmadjafari86/go-todo-list/internal/db"
 	"github.com/ahmadjafari86/go-todo-list/internal/handlers"
 	"github.com/ahmadjafari86/go-todo-list/internal/middleware"

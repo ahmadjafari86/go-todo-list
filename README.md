@@ -26,6 +26,7 @@ This project includes JWT authentication, CRUD management for todos, modular str
 ├── cmd/server/main.go     # entrypoint
 ├── configs/               # configuration and .env
 ├── internal/
+│   ├── db/                # database
 │   ├── handlers/          # gin handlers
 │   ├── middleware/        # JWT and middlewares
 │   ├── models/            # User, Todo, DTOs
@@ -65,7 +66,7 @@ Postgres will run on port `5432`.
 1. Create `.env` file:
 
    ```env
-   APP_PORT=8080
+   APP_PORT=8282
    DB_HOST=localhost
    DB_PORT=5432
    DB_USER=postgres
