@@ -30,12 +30,11 @@ func getenvInt(key string, fallback int) int {
 }
 
 func New() *Config {
-	exp := getenvInt("JWT_EXP_MINUTES", 60)
 	return &Config{
 		Port:              os.Getenv("PORT"),
 		DatabaseURL:       os.Getenv("DATABASE_URL"),
 		JWTSecret:         os.Getenv("JWT_SECRET"),
-		JWTExpMinutes:     exp,
+		JWTExpMinutes:     getenvInt("JWT_EXP_MINUTES", 60),
 		DBMaxOpenConns:    getenvInt("DB_MAX_OPEN_CONNS", 25),
 		DBMaxIdleConns:    getenvInt("DB_MAX_IDLE_CONNS", 25),
 		DBConnMaxLifetime: getenvInt("DB_CONN_MAX_LIFETIME", 300),
