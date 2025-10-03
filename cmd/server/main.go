@@ -9,7 +9,7 @@
 // @license.name MIT
 // @license.url https://opensource.org/licenses/MIT
 
-// @host localhost:8080
+// @host localhost:8282
 // @BasePath /
 
 // @securityDefinitions.apikey BearerAuth
@@ -35,6 +35,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	_ "github.com/ahmadjafari86/go-todo-list/docs"
 	"github.com/ahmadjafari86/go-todo-list/internal/config"
 	"github.com/ahmadjafari86/go-todo-list/internal/db"
 	"github.com/ahmadjafari86/go-todo-list/internal/handlers"
