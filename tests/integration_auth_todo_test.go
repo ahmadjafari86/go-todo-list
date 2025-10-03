@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -31,14 +32,14 @@ func setupAuthDB(t *testing.T) {
 	ctx := context.Background()
 
 	req := testcontainers.ContainerRequest{
-		Image:        "postgres:15",
+		Image:        "postgres:17",
 		ExposedPorts: []string{"5432/tcp"},
 		Env: map[string]string{
 			"POSTGRES_PASSWORD": "testpass",
 			"POSTGRES_USER":     "testuser",
 			"POSTGRES_DB":       "testdb",
 		},
-		WaitingFor: wait.ForLog("database system is ready to accept connections").WithStartupTimeout(60 * 1),
+		WaitingFor: wait.ForLog("database system is ready to accept connections").WithStartupTimeout(120 * time.Second),
 	}
 
 	pgC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -63,7 +64,16 @@ func setupAuthDB(t *testing.T) {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		t.Fatalf("failed to connect db: %v", err)
+		for range 5 {
+			time.Sleep(2 * time.Second)
+			db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+			if err == nil {
+				break
+			}
+		}
+	}
+	if err != nil {
+		t.Fatalf("failed to connect db after retries: %v", err)
 	}
 
 	db.AutoMigrate(&models.User{}, &models.Todo{})
