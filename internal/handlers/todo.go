@@ -18,6 +18,18 @@ func NewTodoHandler(svc service.TodoService) *TodoHandler {
 	return &TodoHandler{svc: svc}
 }
 
+// CreateTodo godoc
+// @Summary Create a todo
+// @Description Create a new todo for the authenticated user
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Param todo body models.CreateTodoRequest true "Todo"
+// @Success 201 {object} models.Todo
+// @Failure 400 {object} validation.ProblemDetails
+// @Failure 401 {object} validation.ProblemDetails
+// @Router /api/todos [post]
+// @Security BearerAuth
 func (h *TodoHandler) CreateTodo(c *gin.Context) {
 	var payload models.Todo
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -36,6 +48,15 @@ func (h *TodoHandler) CreateTodo(c *gin.Context) {
 	c.JSON(http.StatusCreated, payload)
 }
 
+// ListTodos godoc
+// @Summary List todos
+// @Description Get all todos for the authenticated user
+// @Tags todos
+// @Produce json
+// @Success 200 {array} models.Todo
+// @Failure 401 {object} validation.ProblemDetails
+// @Router /api/todos [get]
+// @Security BearerAuth
 func (h *TodoHandler) ListTodos(c *gin.Context) {
 	ownerID := getUserIDFromContext(c)
 	if ownerID == 0 {
@@ -50,6 +71,17 @@ func (h *TodoHandler) ListTodos(c *gin.Context) {
 	c.JSON(http.StatusOK, todos)
 }
 
+// GetTodo godoc
+// @Summary Get a todo
+// @Description Get a todo by ID (must belong to the authenticated user)
+// @Tags todos
+// @Produce json
+// @Param id path int true "Todo ID"
+// @Success 200 {object} models.Todo
+// @Failure 401 {object} validation.ProblemDetails
+// @Failure 404 {object} validation.ProblemDetails
+// @Router /api/todos/{id} [get]
+// @Security BearerAuth
 func (h *TodoHandler) GetTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	ownerID := getUserIDFromContext(c)
@@ -61,6 +93,20 @@ func (h *TodoHandler) GetTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, todo)
 }
 
+// UpdateTodo godoc
+// @Summary Update a todo
+// @Description Update an existing todo (must belong to the authenticated user)
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Param id path int true "Todo ID"
+// @Param todo body models.UpdateTodoRequest true "Updated Todo"
+// @Success 200 {object} models.Todo
+// @Failure 400 {object} validation.ProblemDetails
+// @Failure 401 {object} validation.ProblemDetails
+// @Failure 404 {object} validation.ProblemDetails
+// @Router /api/todos/{id} [put]
+// @Security BearerAuth
 func (h *TodoHandler) UpdateTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var payload models.Todo
@@ -77,6 +123,17 @@ func (h *TodoHandler) UpdateTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, payload)
 }
 
+// ToggleComplete godoc
+// @Summary Toggle todo completion
+// @Description Mark a todo as complete/incomplete
+// @Tags todos
+// @Produce json
+// @Param id path int true "Todo ID"
+// @Success 200 {object} models.Todo
+// @Failure 401 {object} validation.ProblemDetails
+// @Failure 404 {object} validation.ProblemDetails
+// @Router /api/todos/{id}/complete [patch]
+// @Security BearerAuth
 func (h *TodoHandler) ToggleComplete(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	ownerID := getUserIDFromContext(c)
@@ -88,6 +145,17 @@ func (h *TodoHandler) ToggleComplete(c *gin.Context) {
 	c.JSON(http.StatusOK, todo)
 }
 
+// DeleteTodo godoc
+// @Summary Delete a todo
+// @Description Delete a todo (must belong to the authenticated user)
+// @Tags todos
+// @Produce json
+// @Param id path int true "Todo ID"
+// @Success 204
+// @Failure 401 {object} validation.ProblemDetails
+// @Failure 404 {object} validation.ProblemDetails
+// @Router /api/todos/{id} [delete]
+// @Security BearerAuth
 func (h *TodoHandler) DeleteTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	ownerID := getUserIDFromContext(c)

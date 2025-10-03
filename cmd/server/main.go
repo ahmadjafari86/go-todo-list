@@ -1,3 +1,21 @@
+// @title Todo API
+// @version 1.0
+// @description This is a Todo API with JWT authentication, owner-scoped Todos, and RFC7807 error responses.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.email support@example.com
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 package main
 
 import (
@@ -13,6 +31,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	logrus "github.com/sirupsen/logrus"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/ahmadjafari86/go-todo-list/internal/config"
 	"github.com/ahmadjafari86/go-todo-list/internal/db"
@@ -66,7 +87,7 @@ func main() {
 	r.Use(middleware.RequestLogger())
 
 	// routes
-	r.GET("/healthcheck", func(c *gin.Context) {
+	r.GET("/healthz", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
@@ -83,6 +104,8 @@ func main() {
 		api.PATCH("/todos/:id/complete", todoH.ToggleComplete)
 		api.DELETE("/todos/:id", todoH.DeleteTodo)
 	}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", cfg.PortOrDefault()),
