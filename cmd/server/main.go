@@ -56,7 +56,7 @@ func main() {
 	// configure structured logger
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetOutput(os.Stdout)
-	logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetLevel(logrus.PanicLevel)
 
 	if cfg.DatabaseURL == "" {
 		logrus.Fatal("DATABASE_URL is required")
